@@ -32,7 +32,7 @@ public class MainWindow {
 
     private final Label scaleLabel = new Label();
 
-    private static final int MAX_SCALE = 200;
+    private static final int MAX_SCALE = 2000;
 
     private static final double MOVE_COEFFICIENT = 1.5;
 
@@ -177,9 +177,9 @@ public class MainWindow {
         }
 
         return new Color(
+                Math.min(value * 4, 1),
                 value,
-                0,
-                0,
+                Math.min(value * 2, 1),
                 1
         );
 
