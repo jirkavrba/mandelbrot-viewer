@@ -24,6 +24,10 @@ public class MainWindow {
     // This is just to prevent my PC from straight up dying
     private final static int MIN_RESOLUTION = 2;
 
+    private int scale = 1;
+
+    private static final int MAX_SCALE = 10;
+
     private static final double DOUBLE_EPSILON = 0.001;
 
     public final static int WIDTH = 640;
@@ -51,7 +55,7 @@ public class MainWindow {
                         new Label("Resolution"),
                         this.resolution
                 ),
-                this.canvas
+        this.canvas
         );
 
         root.setSpacing(10);
@@ -63,15 +67,30 @@ public class MainWindow {
     }
 
     private void configureControls() {
-        this.iterations.setBlockIncrement(1);
         this.iterations.setBlockIncrement(5);
-        this.iterations.setShowTickLabels(true);
-        this.iterations.setShowTickMarks(true);
+        this.resolution.setBlockIncrement(1);
     }
 
     private void registerEventListeners() {
         this.iterations.valueProperty().addListener(event -> this.draw());
         this.resolution.valueProperty().addListener(event -> this.draw());
+
+        this.canvas.setOnScroll(event -> {
+            if (Math.abs(event.getDeltaY()) < DOUBLE_EPSILON) {
+                return;
+            }
+
+            // TODO: add boundaries shift based on the position
+
+            if (event.getDeltaY() > 0) {
+                this.scale = Math.min(this.scale + 1, MAX_SCALE);
+            }
+            else {
+                this.scale = Math.max(this.scale - 1, 1);
+            }
+
+            this.draw();
+        });
     }
 
     private void draw() {
@@ -86,8 +105,8 @@ public class MainWindow {
             for (int y = 0; y < HEIGHT; y += pixel) {
 
                 double value = this.mandelbrot.compute(
-                        (double) x / WIDTH,
-                        (double) y / HEIGHT
+                        (double) x / this.scale / WIDTH,
+                        (double) y / this.scale / HEIGHT
                 );
 
                 context.setFill((value < DOUBLE_EPSILON)
