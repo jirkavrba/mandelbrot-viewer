@@ -1,7 +1,6 @@
 package dev.vrba.experiments.mandelbrot;
 
 import dev.vrba.experiments.mandelbrot.math.MandelbrotSet;
-import javafx.beans.property.DoubleProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -24,6 +23,8 @@ public class MainWindow {
 
     // This is just to prevent my PC from straight up dying
     private final static int MIN_RESOLUTION = 2;
+
+    private static final double DOUBLE_EPSILON = 0.001;
 
     public final static int WIDTH = 640;
 
@@ -63,6 +64,7 @@ public class MainWindow {
 
     private void configureControls() {
         this.iterations.setBlockIncrement(1);
+        this.iterations.setBlockIncrement(5);
         this.iterations.setShowTickLabels(true);
         this.iterations.setShowTickMarks(true);
     }
@@ -88,7 +90,11 @@ public class MainWindow {
                         (double) y / HEIGHT
                 );
 
-                context.setFill(new Color(value, 0, 0, 1));
+                context.setFill((value < DOUBLE_EPSILON)
+                        ? Color.BLACK
+                        : new Color(value, Math.pow(value, 4), Math.pow(value, 8), 1)
+                );
+
                 context.fillRect(x, y, pixel, pixel);
             }
         }
