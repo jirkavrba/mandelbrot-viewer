@@ -12,6 +12,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 public class MainWindow {
 
@@ -30,18 +31,22 @@ public class MainWindow {
 
     private static final int MAX_SCALE = 100;
 
+    private static final double MOVE_COEFFICIENT = 2;
+
     private static final double DOUBLE_EPSILON = 0.001;
 
     public final static int WIDTH = 640;
 
     public final static int HEIGHT = 480;
 
+    private Pair<Double, Double> dragStart;
+
 
     public MainWindow() {
         this.mandelbrot = new MandelbrotSet();
 
         this.canvas = new Canvas(WIDTH, HEIGHT);
-        this.iterations = new Slider(1, 100, this.mandelbrot.getIterations());
+        this.iterations = new Slider(1, 1000, this.mandelbrot.getIterations());
         this.resolution = new Slider(1, 10, 5);
 
         this.configureControls();
@@ -57,7 +62,7 @@ public class MainWindow {
                         new Label("Resolution"),
                         this.resolution
                 ),
-        this.canvas
+                this.canvas
         );
 
         root.setSpacing(10);
@@ -86,16 +91,14 @@ public class MainWindow {
 
             if (zoomIn) {
                 this.scale = Math.min(this.scale + 1, MAX_SCALE);
-            }
-            else {
+            } else {
                 this.scale = Math.max(this.scale - 1, 1);
             }
 
             // TODO: add boundaries shift based on the position
             if (this.scale == 1) {
                 this.mandelbrot.setBoundaries(MandelbrotSet.MAX_BOUNDARY);
-            }
-            else {
+            } else {
                 double left = event.getX() / WIDTH;
                 double top = event.getY() / HEIGHT;
 
@@ -109,6 +112,25 @@ public class MainWindow {
                 this.mandelbrot.setBoundaries(updated);
             }
 
+
+            this.draw();
+        });
+
+        this.canvas.setOnMousePressed(event -> this.dragStart = new Pair<>(event.getX() / WIDTH, event.getY() / HEIGHT));
+        this.canvas.setOnMouseReleased(event -> {
+            ComplexNumber delta = new ComplexNumber(
+                    -(event.getX() / WIDTH - this.dragStart.getKey()) / this.scale * MOVE_COEFFICIENT,
+                    -(event.getY() / HEIGHT - this.dragStart.getValue()) / this.scale * MOVE_COEFFICIENT
+            );
+
+
+            this.mandelbrot.setBoundaries(
+                    new ComplexBoundaries(
+                            this.mandelbrot.getBoundaries().getCenter().add(delta),
+                            this.mandelbrot.getBoundaries().getReal(),
+                            this.mandelbrot.getBoundaries().getImaginary()
+                    )
+            );
 
             this.draw();
         });
@@ -133,7 +155,7 @@ public class MainWindow {
                 context.setFill((value < DOUBLE_EPSILON)
                         ? Color.BLACK
                         //: Color.RED
-                        : new Color(value, Math.pow(value, 4), Math.pow(value, 8), 1)
+                        : new Color(value, 0, Math.pow(value, 8), 1)
                 );
 
                 context.fillRect(x, y, pixel, pixel);

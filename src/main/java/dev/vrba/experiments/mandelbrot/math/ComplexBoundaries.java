@@ -30,8 +30,8 @@ public class ComplexBoundaries {
 
     public ComplexNumber getCenter() {
         return new ComplexNumber(
-            min.getReal() + (max.getReal() - min.getReal()),
-                min.getImaginary() + (max.getImaginary() - min.getImaginary())
+                (min.getReal() + (this.getReal()) / 2),
+                (min.getImaginary() + (this.getImaginary() / 2))
         );
     }
 
