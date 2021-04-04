@@ -12,6 +12,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.util.Pair;
 
 public class MainWindow {
@@ -29,9 +30,11 @@ public class MainWindow {
 
     private int scale = 1;
 
-    private static final int MAX_SCALE = 100;
+    private final Label scaleLabel = new Label();
 
-    private static final double MOVE_COEFFICIENT = 2;
+    private static final int MAX_SCALE = 200;
+
+    private static final double MOVE_COEFFICIENT = 1.5;
 
     private static final double DOUBLE_EPSILON = 0.001;
 
@@ -60,7 +63,10 @@ public class MainWindow {
                         this.iterations,
 
                         new Label("Resolution"),
-                        this.resolution
+                        this.resolution,
+
+                        new Label("Scale"),
+                        this.scaleLabel
                 ),
                 this.canvas
         );
@@ -76,6 +82,7 @@ public class MainWindow {
     private void configureControls() {
         this.iterations.setBlockIncrement(5);
         this.resolution.setBlockIncrement(1);
+        this.scaleLabel.setFont(new Font(20));
     }
 
     private void registerEventListeners() {
@@ -90,15 +97,19 @@ public class MainWindow {
             boolean zoomIn = event.getDeltaY() > 0;
 
             if (zoomIn) {
-                this.scale = Math.min(this.scale + 1, MAX_SCALE);
+                this.scale = Math.min((int) (1.25 * this.scale + 1 ), MAX_SCALE);
             } else {
-                this.scale = Math.max(this.scale - 1, 1);
+                this.scale = Math.max((int) (this.scale * 0.75 - 1), 1);
             }
 
             // TODO: add boundaries shift based on the position
             if (this.scale == 1) {
                 this.mandelbrot.setBoundaries(MandelbrotSet.MAX_BOUNDARY);
-            } else {
+            }
+            else if (this.scale == MAX_SCALE) {
+                return;
+            }
+            else {
                 double left = event.getX() / WIDTH;
                 double top = event.getY() / HEIGHT;
 
@@ -137,6 +148,7 @@ public class MainWindow {
     }
 
     private void draw() {
+        this.scaleLabel.setText(this.scale + "x");
         this.mandelbrot.setIterations((int) this.iterations.getValue());
 
         GraphicsContext context = this.canvas.getGraphicsContext2D();
@@ -152,14 +164,24 @@ public class MainWindow {
                         (double) y / HEIGHT
                 );
 
-                context.setFill((value < DOUBLE_EPSILON)
-                        ? Color.BLACK
-                        //: Color.RED
-                        : new Color(value, 0, Math.pow(value, 8), 1)
-                );
-
+                context.setFill(this.colorForValue(value));
                 context.fillRect(x, y, pixel, pixel);
             }
         }
+    }
+
+    private Color colorForValue(double value)  {
+        // The point is inside the Mandelbrot's set
+        if (value < DOUBLE_EPSILON) {
+                return Color.BLACK;
+        }
+
+        return new Color(
+                value,
+                0,
+                0,
+                1
+        );
+
     }
 }
