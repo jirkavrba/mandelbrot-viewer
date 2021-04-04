@@ -16,13 +16,15 @@ public class MandelbrotSet {
 
     private ComplexBoundaries boundaries;
 
+    public static final ComplexBoundaries MAX_BOUNDARY = new ComplexBoundaries(
+            new ComplexNumber(-2, -1),
+            new ComplexNumber(1, 1)
+    );
+
     public MandelbrotSet() {
         this.iterations = 10;
         this.exponent = 2;
-        this.boundaries = new ComplexBoundaries(
-                new ComplexNumber(-2, -1),
-                new ComplexNumber(1, 1)
-        );
+        this.boundaries = MAX_BOUNDARY;
     }
 
     public double compute(double x, double y) {
@@ -35,7 +37,7 @@ public class MandelbrotSet {
         for (int i = 0; i < iterations; i++) {
             z = z.square().add(c);
 
-            if (!this.boundaries.contains(z)) {
+            if (!MAX_BOUNDARY.contains(z)) {
                return (i) / (double) iterations;
             }
         }

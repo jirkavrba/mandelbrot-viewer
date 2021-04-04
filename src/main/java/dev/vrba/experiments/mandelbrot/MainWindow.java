@@ -1,5 +1,7 @@
 package dev.vrba.experiments.mandelbrot;
 
+import dev.vrba.experiments.mandelbrot.math.ComplexBoundaries;
+import dev.vrba.experiments.mandelbrot.math.ComplexNumber;
 import dev.vrba.experiments.mandelbrot.math.MandelbrotSet;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -26,7 +28,7 @@ public class MainWindow {
 
     private int scale = 1;
 
-    private static final int MAX_SCALE = 10;
+    private static final int MAX_SCALE = 100;
 
     private static final double DOUBLE_EPSILON = 0.001;
 
@@ -80,14 +82,33 @@ public class MainWindow {
                 return;
             }
 
-            // TODO: add boundaries shift based on the position
+            boolean zoomIn = event.getDeltaY() > 0;
 
-            if (event.getDeltaY() > 0) {
+            if (zoomIn) {
                 this.scale = Math.min(this.scale + 1, MAX_SCALE);
             }
             else {
                 this.scale = Math.max(this.scale - 1, 1);
             }
+
+            // TODO: add boundaries shift based on the position
+            if (this.scale == 1) {
+                this.mandelbrot.setBoundaries(MandelbrotSet.MAX_BOUNDARY);
+            }
+            else {
+                double left = event.getX() / WIDTH;
+                double top = event.getY() / HEIGHT;
+
+                ComplexNumber center = this.mandelbrot.getBoundaries().scale(left, top);
+
+                ComplexBoundaries updated = new ComplexBoundaries(
+                        center,
+                        MandelbrotSet.MAX_BOUNDARY.getReal() / this.scale,
+                        MandelbrotSet.MAX_BOUNDARY.getImaginary() / this.scale
+                );
+                this.mandelbrot.setBoundaries(updated);
+            }
+
 
             this.draw();
         });
@@ -105,12 +126,13 @@ public class MainWindow {
             for (int y = 0; y < HEIGHT; y += pixel) {
 
                 double value = this.mandelbrot.compute(
-                        (double) x / this.scale / WIDTH,
-                        (double) y / this.scale / HEIGHT
+                        (double) x / WIDTH,
+                        (double) y / HEIGHT
                 );
 
                 context.setFill((value < DOUBLE_EPSILON)
                         ? Color.BLACK
+                        //: Color.RED
                         : new Color(value, Math.pow(value, 4), Math.pow(value, 8), 1)
                 );
 
