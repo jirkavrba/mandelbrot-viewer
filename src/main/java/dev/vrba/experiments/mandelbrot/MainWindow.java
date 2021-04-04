@@ -18,7 +18,12 @@ public class MainWindow {
 
     private final Slider iterations;
 
+    private final Slider resolution;
+
     private final MandelbrotSet mandelbrot;
+
+    // This is just to prevent my PC from straight up dying
+    private final static int MIN_RESOLUTION = 2;
 
     public final static int WIDTH = 640;
 
@@ -26,10 +31,11 @@ public class MainWindow {
 
 
     public MainWindow() {
-        this.canvas = new Canvas(WIDTH, HEIGHT);
-        this.iterations = new Slider(1, 100, 1);
-
         this.mandelbrot = new MandelbrotSet();
+
+        this.canvas = new Canvas(WIDTH, HEIGHT);
+        this.iterations = new Slider(1, 100, this.mandelbrot.getIterations());
+        this.resolution = new Slider(1, 10, 5);
 
         this.configureControls();
         this.registerEventListeners();
@@ -39,7 +45,10 @@ public class MainWindow {
         HBox root = new HBox(
                 new VBox(
                         new Label("Iterations count"),
-                        this.iterations
+                        this.iterations,
+
+                        new Label("Resolution"),
+                        this.resolution
                 ),
                 this.canvas
         );
@@ -59,27 +68,20 @@ public class MainWindow {
     }
 
     private void registerEventListeners() {
-        this.iterations
-                .valueProperty()
-                .addListener(event -> {
-                    DoubleProperty property = (DoubleProperty) event;
-
-                    int iterations = (int) Math.ceil(property.getValue());
-
-                    this.mandelbrot.setIterations(iterations);
-                    this.draw();
-                });
+        this.iterations.valueProperty().addListener(event -> this.draw());
+        this.resolution.valueProperty().addListener(event -> this.draw());
     }
 
     private void draw() {
-        GraphicsContext context = this.canvas.getGraphicsContext2D();
+        this.mandelbrot.setIterations((int) this.iterations.getValue());
 
+        GraphicsContext context = this.canvas.getGraphicsContext2D();
         context.clearRect(0, 0, WIDTH, HEIGHT);
 
-        double pixelSize = 10;
+        int pixel = (int) (this.resolution.getMax() - this.resolution.getValue()) + MIN_RESOLUTION;
 
-        for (int x = 0; x < WIDTH; x += pixelSize) {
-            for (int y = 0; y < HEIGHT; y += pixelSize) {
+        for (int x = 0; x < WIDTH; x += pixel) {
+            for (int y = 0; y < HEIGHT; y += pixel) {
 
                 double value = this.mandelbrot.compute(
                         (double) x / WIDTH,
@@ -87,7 +89,7 @@ public class MainWindow {
                 );
 
                 context.setFill(new Color(value, 0, 0, 1));
-                context.fillRect(x, y, pixelSize, pixelSize);
+                context.fillRect(x, y, pixel, pixel);
             }
         }
     }

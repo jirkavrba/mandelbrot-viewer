@@ -21,7 +21,7 @@ public class MandelbrotSet {
         this.exponent = 2;
         this.boundaries = new ComplexBoundaries(
                 new ComplexNumber(-2, -1),
-                new ComplexNumber(1, 0.5)
+                new ComplexNumber(1, 1)
         );
     }
 
