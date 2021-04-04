@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.9'
+    id 'edu.sc.seis.launch4j' version '2.4.9'
 }
 
 group 'dev.vrba.experiments'
@@ -38,4 +39,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+launch4j {
+    mainClassName = 'dev.vrba.experiments.mandelbrot.MandelbrotApplication'
+    // icon = "${projectDir}/icons/myApp.ico"
 }
