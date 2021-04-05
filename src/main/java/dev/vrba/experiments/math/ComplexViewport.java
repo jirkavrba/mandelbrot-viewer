@@ -25,4 +25,19 @@ public class ComplexViewport {
         this.min = center.minus(delta);
         this.max = center.plus(delta);
     }
+
+    public boolean contains(@NotNull ComplexNumber number) {
+        return this.min.getReal() <= number.getReal() && this.min.getImaginary() <= number.getImaginary() &&
+                this.max.getReal() >= number.getReal() && this.max.getImaginary() >= number.getImaginary();
+    }
+
+    public ComplexNumber getRelativeComplexNumber(double real, double imaginary) {
+        assert real >= 0.0 && real <= 1.0;
+        assert imaginary >= 0.0 && imaginary <= 1.0;
+
+        return new ComplexNumber(
+                min.getReal() + (max.getReal() - min.getReal()) * real,
+                min.getImaginary() + (max.getImaginary() - min.getImaginary()) * imaginary
+        );
+    }
 }

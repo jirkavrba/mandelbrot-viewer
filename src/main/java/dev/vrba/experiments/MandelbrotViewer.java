@@ -1,6 +1,7 @@
 package dev.vrba.experiments;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.renderer.opengl.GL;
 import com.jme3.system.AppSettings;
 import dev.vrba.experiments.math.ComplexViewport;
 import dev.vrba.experiments.math.MandelbrotSet;
@@ -14,6 +15,10 @@ public class MandelbrotViewer extends SimpleApplication {
     private final MandelbrotSet mandelbrot = new MandelbrotSet();
 
     private ComplexViewport viewport = ComplexViewport.DEFAULT_VIEWPORT;
+
+    private int pixelSize = 10;
+
+    private boolean needsUpdate = true;
 
     public static void main(String[] arguments) {
         MandelbrotViewer app = new MandelbrotViewer();
@@ -44,6 +49,22 @@ public class MandelbrotViewer extends SimpleApplication {
     }
 
     private void render() {
-        System.out.println(this.viewport);
+        if (this.needsUpdate) {
+            double[][] buffer = new double[WIDTH / this.pixelSize][HEIGHT / this.pixelSize];
+
+            for (int x = 0; x < WIDTH / this.pixelSize; x ++) {
+                for (int y = 0; y < HEIGHT / this.pixelSize; y ++) {
+                    buffer[x][y] = this.mandelbrot.compute(
+                            this.viewport.getRelativeComplexNumber(
+                                    x * this.pixelSize / (double) WIDTH,
+                                    y * this.pixelSize / (double) HEIGHT
+                            )
+                    );
+                }
+            }
+
+
+            this.needsUpdate = false;
+        }
     }
 }
