@@ -33,4 +33,8 @@ public class ComplexNumber {
                 this.real * this.imaginary * 2.0
         );
     }
+
+    public double distance() {
+        return Math.sqrt(this.real * this.real + this.imaginary * this.imaginary);
+    }
 }
