@@ -26,6 +26,14 @@ public class ComplexNumber {
     }
 
     @NotNull
+    public ComplexNumber minus(@NotNull ComplexNumber another) {
+        return new ComplexNumber(
+                this.real - another.real,
+                this.imaginary - another.imaginary
+        );
+    }
+
+    @NotNull
     public ComplexNumber square() {
         // (a + bi)^2 = a^2 - b^2 + 2abi
         return new ComplexNumber(
