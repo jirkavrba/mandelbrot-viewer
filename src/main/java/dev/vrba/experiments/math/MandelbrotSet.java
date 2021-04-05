@@ -11,7 +11,7 @@ public class MandelbrotSet {
     private double threshold = 10.0;
 
     public double compute(@NotNull final ComplexNumber c) {
-        ComplexNumber z = new ComplexNumber(0, 0);
+        ComplexNumber z = ComplexNumber.ZERO;
 
         for (int i = 0; i < this.iterations; i ++) {
             z = z.square().plus(c);

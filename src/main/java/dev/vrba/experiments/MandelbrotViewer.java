@@ -2,8 +2,18 @@ package dev.vrba.experiments;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.system.AppSettings;
+import dev.vrba.experiments.math.ComplexViewport;
+import dev.vrba.experiments.math.MandelbrotSet;
 
 public class MandelbrotViewer extends SimpleApplication {
+
+    private static final int WIDTH = 640;
+
+    private static final int HEIGHT = 480;
+
+    private final MandelbrotSet mandelbrot = new MandelbrotSet();
+
+    private ComplexViewport viewport = ComplexViewport.DEFAULT_VIEWPORT;
 
     public static void main(String[] arguments) {
         MandelbrotViewer app = new MandelbrotViewer();
@@ -11,8 +21,8 @@ public class MandelbrotViewer extends SimpleApplication {
         AppSettings settings = new AppSettings(true);
 
         settings.setTitle("Mandelbrot viewer @jirkavrba");
-        settings.setWidth(640);
-        settings.setHeight(480);
+        settings.setWidth(WIDTH);
+        settings.setHeight(HEIGHT);
         settings.setFullscreen(false);
         settings.setResizable(false);
 
@@ -24,6 +34,16 @@ public class MandelbrotViewer extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        this.flyCam.setEnabled(false);
+        this.render();
+    }
 
+    @Override
+    public void update() {
+        super.update();
+    }
+
+    private void render() {
+        System.out.println(this.viewport);
     }
 }

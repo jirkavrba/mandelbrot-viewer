@@ -2,12 +2,14 @@ package dev.vrba.experiments.math;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A very simplified version of complex number representation, it only supports two operations used when calculating
  * the Mandelbrot set: plus and square
  */
+@ToString
 @AllArgsConstructor
 public class ComplexNumber {
 
@@ -16,6 +18,8 @@ public class ComplexNumber {
 
     @Getter
     private final double imaginary;
+
+    public static final ComplexNumber ZERO = new ComplexNumber(0, 0);
 
     @NotNull
     public ComplexNumber plus(@NotNull ComplexNumber another) {
